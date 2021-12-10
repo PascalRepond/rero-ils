@@ -314,7 +314,6 @@ class PatronTransaction(IlsRecord):
                 delete_pid=delete_pid,
                 steps=steps
             )
-            return record
 
     @classmethod
     def create_patron_transaction_from_notification(
