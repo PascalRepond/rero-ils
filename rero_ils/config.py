@@ -124,6 +124,7 @@ from .permissions import librarian_delete_permission_factory, \
     librarian_permission_factory, librarian_update_permission_factory, \
     wiki_edit_ui_permission, wiki_edit_view_permission
 from .query import and_i18n_term_filter, and_term_filter, \
+    and_term_filter_fiction, and_term_filter_no_fiction, \
     exclude_terms_filter, or_terms_filter_by_criteria
 from .utils import get_current_language
 
@@ -1855,8 +1856,8 @@ RECORDS_REST_FACETS = dict(
                 'holdings.holdings_type': ['standard', 'serial']
             }),
             _('author'): and_i18n_term_filter('facet_contribution'),
-            _('subject_fiction'): and_term_filter('facet_subjects'),
-            _('subject_no_fiction'): and_term_filter('facet_subjects'),
+            _('subject_fiction'): and_term_filter_fiction('facet_subjects'),
+            _('subject_no_fiction'): and_term_filter_no_fiction('facet_subjects'),
             _('new_acquisition'): acquisition_filter(),
             _('identifiers'): nested_identified_filter()
         },
@@ -1874,7 +1875,7 @@ RECORDS_REST_FACETS = dict(
                 _('location'): terms_filter('holdings.location.pid')
             },
             _('status'): terms_filter('holdings.items.status'),
-            _('genreForm'): terms_filter('genreForm.term'),
+            _('genreForm'): terms_filter('facet_genre_form'),
             _('intendedAudience'): terms_filter('intendedAudience.value'),
             _('year'): range_filter('provisionActivity.startDate')
         }

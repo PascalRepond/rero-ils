@@ -50,6 +50,40 @@ def and_term_filter(field):
     return inner
 
 
+def and_term_filter_fiction(field):
+    """Create a term filter for subject (fiction).
+
+    :param field: Field name.
+    :return: Function that returns a boolean AND query between term values.
+    """
+    def inner(values):
+        must = [Q('term', **{field: value}) for value in values]
+        must.append(Q(
+            "terms",
+            **{'genreForm.identifiedBy.value': [
+                'A027757308', 'A021097366']}))
+        return Q('bool', must=must)
+    return inner
+
+
+def and_term_filter_no_fiction(field):
+    """Create a term filter for subject (no fiction).
+
+    :param field: Field name.
+    :return: Function that returns a boolean AND query between term values.
+    """
+    def inner(values):
+        must = [Q('term', **{field: value}) for value in values]
+        must.append(Q('bool',
+                    must_not=[
+                        Q("term", **{
+                            'genreForm.identifiedBy.value': 'A027757308'}),
+                        Q("term", **{
+                            'genreForm.identifiedBy.value': 'A021097366'})]))
+        return Q('bool', must=must)
+    return inner
+
+
 def exclude_terms_filter(field):
     """Exclude a term filter.
 
