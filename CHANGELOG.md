@@ -4,6 +4,8 @@
 
 [Full Changelog](https://github.com/rero/rero-ils/compare/v1.18.0...v1.19.0)
 
+COUCOU
+
 **New features:**
 * Add local entities management [\#3458](https://github.com/rero/rero-ils/pull/3458) (by @zannkukai)
 * entities: add place [\#3456](https://github.com/rero/rero-ils/pull/3456) (by @rerowep)
