@@ -895,8 +895,7 @@ def test_items_notes(client, librarian_martigny, item_lib_martigny, json_header)
     )
     assert res.status_code == 200
 
-    # add a second public note -- This should fail because we can only have one
-    # note of each type for an item
+    # add a second public note
     item["notes"].append(
         {"type": ItemNoteTypes.GENERAL, "content": "Second public note"}
     )
@@ -905,17 +904,13 @@ def test_items_notes(client, librarian_martigny, item_lib_martigny, json_header)
         data=json.dumps(item),
         headers=json_header,
     )
-    assert get_json(res) == {
-        "status": 400,
-        "message": "Validation error: Can not have multiple notes of the same type..",
-    }
-    item["notes"] = item.notes[:-1]
+    assert res.status_code == 200
 
     # get a specific type of notes
     #  --> public : should return a note
     #  --> checkin : should return nothing
     #  --> dummy : should never return something !
-    assert item.get_note(ItemNoteTypes.GENERAL)
+    assert item.get_note(ItemNoteTypes.GENERAL) == "Public note | Second public note"
     assert item.get_note(ItemNoteTypes.CHECKIN) is None
     assert item.get_note("dummy") is None
 

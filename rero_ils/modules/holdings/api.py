@@ -156,9 +156,7 @@ class Holding(IlsRecord):
             - document type is ebook and holding type is not electronic.
             - document type is not ebook and holding type is electronic.
             - holding type is serial and the next_expected_date
-              is not given for a regular frequency.
-            - if not a serial holdings contain one of optional serials fields.
-            - if notes array has multiple notes with same type
+              is not given for a regular frequency.            - if not a serial holdings contain one of optional serials fields.
         """
         document_pid = extracted_data_from_ref(self.get("document").get("$ref"))
         document = Document.get_record_by_pid(document_pid)
@@ -193,10 +191,7 @@ class Holding(IlsRecord):
             for field in fields:
                 if self.get(field):
                     return _(f"{field} is allowed only for serial holdings")
-        # No multiple notes with same type
-        note_types = [note.get("type") for note in self.get("notes", [])]
-        if len(note_types) != len(set(note_types)):
-            return _("Can not have multiple notes of the same type.")
+
         return True
 
     def delete(self, force=False, dbcommit=False, delindex=False):
@@ -364,10 +359,12 @@ class Holding(IlsRecord):
         :param note_type: the type of note (see ``HoldingNoteTypes``)
         :return the content of the note, None if note type is not found
         """
-        notes = [
+        if notes := [
             note.get("content") for note in self.notes if note.get("type") == note_type
-        ]
-        return next(iter(notes), None)
+        ]:
+            return " | ".join(notes)
+        else:
+            return None
 
     @property
     def get_items_count_by_holding_pid(self):

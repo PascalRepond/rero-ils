@@ -239,7 +239,10 @@ class Collector:
         # process notes
         for note in hit.get("notes", []):
             if note.get("type") in ItemNoteTypes.INVENTORY_LIST_CATEGORY:
-                csv_data[f"item_{note.get('type')}"] = note.get("content")
+                if note_of_type := csv_data.get(f"item_{note.get('type')}"):
+                    note_of_type += f'| {note.get("content")}'
+                else:
+                    note_of_type = {note.get("content")}
         # item masking
         csv_data["item_masked"] = "Yes" if hit.get("_masked") else "No"
 

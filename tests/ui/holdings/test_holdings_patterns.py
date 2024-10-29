@@ -571,15 +571,16 @@ def test_holding_notes(
     holding["notes"].append(
         {"type": HoldingNoteTypes.CLAIM, "content": "new cliam note"}
     )
-    with pytest.raises(ValidationError):
-        holding.update(holding, dbcommit=True, reindex=True)
-    holding["notes"] = holding.notes[:-1]
+    holding.update(holding, dbcommit=True, reindex=True)
+    assert len(holding.notes) == 3
 
     # get a specific type of notes
-    #  --> staff : should return a note
+    #  --> staff : should return something
+    #  --> claim : should return concatenated a note
     #  --> routing : should return nothing
     #  --> dummy : should never return something !
     assert holding.get_note(HoldingNoteTypes.STAFF)
+    assert holding.get_note(HoldingNoteTypes.CLAIM) == "Claim note | new cliam note"
     assert holding.get_note(HoldingNoteTypes.ROUTING) is None
     assert holding.get_note("dummy") is None
 

@@ -69,14 +69,11 @@ class ItemRecord(IlsRecord):
 
         Ensures that standard item has no issue field.
 
-        Ensures that only one note of each type is present.
-
         :return: Error message if
             - barcode already exists
             - holdings type is not journal and item type is issue.
             - item type is journal and field issue exists.
             - item type is standard and field issue does not exists.
-            - if notes array has multiple notes with same type
             - `temporary_item_type` has same value than `item_type`
             - temporary_item_type isn't in the future (if specified)
 
@@ -109,9 +106,6 @@ class ItemRecord(IlsRecord):
                 return _(
                     "enumerationAndChronology field is required " "for an issue item"
                 )
-        note_types = [note.get("type") for note in self.get("notes", [])]
-        if len(note_types) != len(set(note_types)):
-            return _("Can not have multiple notes of the same type.")
 
         # check temporary item type data
         if tmp_itty := self.get("temporary_item_type"):
@@ -570,10 +564,12 @@ class ItemRecord(IlsRecord):
         :param note_type: the type of note (see ``ItemNoteTypes``)
         :return the content of the note, None if note type is not found
         """
-        notes = [
+        if notes := [
             note.get("content") for note in self.notes if note.get("type") == note_type
-        ]
-        return next(iter(notes), None)
+        ]:
+            return " | ".join(notes)
+        else:
+            return None
 
     @property
     def is_new_acquisition(self):

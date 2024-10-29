@@ -102,7 +102,6 @@ def test_holding_extended_validation(
     # TESTING SERIAL HOLDINGS
     #   1. validate correct holding
     #   2. testing next expected date for regular frequencies
-    #   3. test multiple note with same type
     #   4. test for unknown document
     #   5. test not allowed field.
     record = Holding.create(serial_holding_data, delete_pid=True)
@@ -115,12 +114,6 @@ def test_holding_extended_validation(
         record.validate()
     # reset data with original value
     record["patterns"]["next_expected_date"] = expected_date
-
-    record.get("notes").append({"type": "general_note", "content": "note"})
-    with pytest.raises(ValidationError) as err:
-        record.validate()
-    assert "Can not have multiple notes of the same type" in str(err)
-    del record["notes"]
 
     with mock.patch.object(
         Document, "get_record_by_pid", mock.MagicMock(return_value=None)
